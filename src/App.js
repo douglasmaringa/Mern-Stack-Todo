@@ -1,74 +1,38 @@
-import React, { useEffect,useState } from 'react';
-import { BrowserRouter as Router, Switch, Route,Link } from 'react-router-dom'
-import { auth } from './firebase';
-import { useStateValue } from './StateProvider';
-import Login from './Login'
+import React from 'react';
 import './App.css';
+import 'bootstrap/dist/css/bootstrap.min.css'
+import { BrowserRouter as Router, Route, Link } from 'react-router-dom'
+import CreateTodo from "./components/create-todo.component"
+import TodosList from "./components/todos-list.component"
+import logo from "./logo.svg";
 
 function App() {
-  const [{ user }, dispatch] = useStateValue();
-
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((authUser) => {
-      if (authUser) {
-        // the user is logged in...
-
-        dispatch({
-          type: 'SET_USER',
-          user: authUser
-        })
-      } else {
-        // the  user is logged out...
-        dispatch({
-          type: 'SET_USER',
-          user: null
-        })
-      }
-    });
-
-    return () => {
-      // Any cleanup operations go in here..
-      unsubscribe();
-    }
-  }, []);
-
-   console.log(user);
   return (
     <Router>
-      <div className="app">
-        <Switch>
-          <Route path="/login">
-            <Login />
-          </Route>
-          <Route path="/">
-            <div>
-            home page
-              {
-                user? (
-                  <div>logged in {user.email}
-                    <button variant="text" color="secondary" onClick={() => auth.signOut()}>
-                     Log Out
-                   </button>
-                  </div>
-                ):(
-                  <div>not logged in
-                     <Link to="/login">
-                     <button variant="text" color="secondary">
-                     Log IN
-                     </button>
-                     </Link>
-                    </div>
-                )
-              }
-              
+        <div className="container">
+          <nav className="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand" href="https://codingthesmartway.com" >
+              <img src={logo} width="30" height="30" alt="CodingTheSmartWay.com" />
+            </a>
+            <Link to="/" className="navbar-brand">MERN-Stack Todo App</Link>
+            <div className="collpase navbar-collapse">
+              <ul className="navbar-nav mr-auto">
+                <li className="navbar-item">
+                  <Link to="/" className="nav-link">Todos</Link>
+                </li>
+                <li className="navbar-item">
+                  <Link to="/create" className="nav-link">Create Todo</Link>
+                </li>
+              </ul>
             </div>
-          </Route>
-        </Switch>
-      </div>
-    </Router>
+          </nav>
+          <br/>
+          <Route path="/" exact component={TodosList} />
+          
+          <Route path="/create" component={CreateTodo} />
+        </div>
+      </Router>
   );
 }
 
 export default App;
-
-
